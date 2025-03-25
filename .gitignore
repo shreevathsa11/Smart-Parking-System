@@ -1,32 +1,40 @@
-# Prerequisites
-*.d
+#include <Wire.h>
+#include <ESP8266WiFi.h> // ESP8266 WiFi library
+#define BLYNK_TEMPLATE_ID "TMPL36zhg2ZEx"
+#define BLYNK_TEMPLATE_NAME "sensor"
+#include <BlynkSimpleEsp8266.h> //Blynk library for ESP8266
 
-# Compiled Object files
-*.slo
-*.lo
-*.o
-*.obj
+#define SENSOR1 D1 //Pin number with appropriate ESP8266 GPIO pin
 
-# Precompiled Headers
-*.gch
-*.pch
+BlynkTimer timer;
+WidgetLED LED1(V0); // Initialize WidgetLED outside the function
 
-# Compiled Dynamic libraries
-*.so
-*.dylib
-*.dll
+char auth[] = "Gf29JlfBmkBs28cF7gk87-ooQ65xOLR9";
+char ssid[] = "Airtel_x_EXT";
+char pass[] = "8884179216";
 
-# Fortran module files
-*.mod
-*.smod
+void setup() {
+  Serial.begin(115200);
+  Blynk.begin(auth, ssid, pass, "blynk.cloud", 80);
+  pinMode(SENSOR1, INPUT_PULLUP);
 
-# Compiled Static libraries
-*.lai
-*.la
-*.a
-*.lib
+  // Set a timer to call the sensor function every 200ms
+  timer.setInterval(200L, sensor);
+}
 
-# Executables
-*.exe
-*.out
-*.app
+void sensor() {
+  int L1 = digitalRead(SENSOR1);
+
+  if (L1 == 1) {
+    Serial.println("IR Sensor 1 detected");
+    LED1.on();
+  } else {
+    Serial.println("1 == All clear");
+    LED1.off();
+  }
+}
+
+void loop() {
+  Blynk.run();
+  timer.run(); // Run the timer
+}
